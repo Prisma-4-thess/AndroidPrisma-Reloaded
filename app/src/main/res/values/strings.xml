@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Prisma</string>
+    <string name="action_settings">Settings</string>
+    <string name="open">Open</string>
+    <string name="close">Closed</string>
+    <string name="navigation_drawer_title">Navigate</string>
+    <string name="please_rate">Please Rate</string>
+    <string name="please_rate_text">Y U No Rate???</string>
+    <string name="yeaaah">yeeaaaahh</string>
+    <string name="naaaah">naaaaaaah</string>
+
+</resources>
