@@ -2,10 +2,19 @@ package gr.prisma.androidprisma.Utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.MediaActionSound;
+import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.Future;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+
+import gr.prisma.androidprisma.Fragments.ArrayListFragment;
+import gr.prisma.androidprisma.MainActivity;
 
 /**
  * Created by dimitris on 2/11/2014.
@@ -26,8 +35,45 @@ public class ServerUtils {
         return curQuery;
     }
 
+    public void cancel(){
+        loading.cancel();
+    }
+
     public void setCurQuery(String curQuery) {
         this.curQuery = curQuery;
+    }
+
+    /**
+     * Function for querying site for ada
+     *
+     */
+    public void loadDecisions(final ArrayListFragment fragment) {
+        if (loading != null && !loading.isDone() && !loading.isCancelled())
+            return;
+        fragment.clearAdapterFragment();
+        loading = Ion.with(context)
+                .load(String.format("https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=%s&imgsz=medium", Uri.encode(curQuery)))
+                .addHeader("Accept", "application/json")
+                .asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        Log.d("SERVER", "completed");
+                        try {
+                            if (e != null)
+                                throw e;
+//                            Log.d("SERVER",result.toString());
+                            JsonArray results = result.getAsJsonObject("responseData").getAsJsonArray("results");
+                            for (int i = 0; i < results.size(); i++) {
+                                Log.d("SERVER", results.get(i).getAsJsonObject().get("title").getAsString());
+                                fragment.addToAdapterFragment(results.get(i).getAsJsonObject().get("title").getAsString());
+                            }
+                            fragment.readyToShow();
+                        } catch (Exception ex) {
+                            Log.d("SERVER", ex.toString());
+                        }
+                    }
+                });
     }
 
 

@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 
 import gr.prisma.androidprisma.Fragments.ArrayListFragment;
 import gr.prisma.androidprisma.Utils.DialogUtils;
+import gr.prisma.androidprisma.Utils.ServerUtils;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -29,14 +30,18 @@ public class MainActivity extends ActionBarActivity {
     private CharSequence mDrawerTitle;
     private ArrayListFragment list;
     private SearchView searchView;
+    private ServerUtils serverUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        serverUtils = new ServerUtils(this);
         initializeUI();
         if (savedInstanceState == null) {
             DialogUtils.showRateDialog(this);
+        } else {
+            if (getSupportFragmentManager().findFragmentById(R.id.content_frame)!=null)
+            getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.content_frame)).commit();
         }
     }
 
@@ -86,33 +91,33 @@ public class MainActivity extends ActionBarActivity {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-                if (getSupportFragmentManager().findFragmentById(R.id.content_frame)!=null)
-                    getSupportFragmentManager().beginTransaction().hide(getSupportFragmentManager().findFragmentById(R.id.content_frame)).commit();
-                return false;
-            }
-        });
-        searchView.setOnSearchClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (list!=null && list.isAdded()) {
-                    getSupportFragmentManager().beginTransaction().show(list).commit();
+                if (getSupportFragmentManager().findFragmentById(R.id.content_frame)!=null) {
+                    getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.content_frame)).commit();
+                    list = null;
                 }
+                return false;
             }
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
             public boolean onQueryTextSubmit(String s) {
+                serverUtils.setCurQuery(s);
                 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(searchView.getWindowToken(),0);
                 searchView.clearFocus();
-                if (list==null) {
+                if (getSupportFragmentManager().findFragmentById(R.id.content_frame)==null) {
+                    Bundle args = new Bundle();
+                    args.putString("query",s);
                     list = new ArrayListFragment();
+                    list.setArguments(args);
                     getSupportFragmentManager().beginTransaction().add(R.id.content_frame, list).commit();
-                }
-                if (list.isAdded()) {
-                    getSupportFragmentManager().beginTransaction().show(list).commit();
+                }else{
+                    Bundle args = new Bundle();
+                    args.putString("query",s);
+                    list = new ArrayListFragment();
+                    list.setArguments(args);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, list).commit();
                 }
                 return true;
             }
@@ -150,7 +155,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+//        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 

@@ -23,8 +23,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="gr.prisma.androidprisma.ProgressBarUpload" />
-
         <activity
             android:name="gr.prisma.androidprisma.Utils.RemoteDialog"
 
