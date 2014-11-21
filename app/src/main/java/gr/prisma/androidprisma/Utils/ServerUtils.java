@@ -2,7 +2,6 @@ package gr.prisma.androidprisma.Utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.media.MediaActionSound;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -14,7 +13,6 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
 import gr.prisma.androidprisma.Fragments.ArrayListFragment;
-import gr.prisma.androidprisma.MainActivity;
 
 /**
  * Created by dimitris on 2/11/2014.
@@ -68,9 +66,9 @@ public class ServerUtils {
                                 Log.d("SERVER", results.get(i).getAsJsonObject().get("title").getAsString());
                                 fragment.addToAdapterFragment(results.get(i).getAsJsonObject().get("title").getAsString());
                             }
-                            fragment.readyToShow();
+//                            fragment.readyToShow();
                         } catch (Exception ex) {
-                            Log.d("SERVER", ex.toString());
+                            Log.d("SERVER", "EERRRR" + ex.toString());
                         }
                     }
                 });

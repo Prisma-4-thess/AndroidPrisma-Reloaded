@@ -2,9 +2,8 @@ package gr.prisma.androidprisma;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ListFragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,8 +13,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 
 import gr.prisma.androidprisma.Fragments.ArrayListFragment;
 import gr.prisma.androidprisma.Utils.DialogUtils;
@@ -34,6 +33,10 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            getWindow().setStatusBarColor(getResources().getColor(R.color.dark_blue));
+        }
         super.onCreate(savedInstanceState);
         serverUtils = new ServerUtils(this);
         initializeUI();
@@ -92,8 +95,8 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public boolean onClose() {
                 if (getSupportFragmentManager().findFragmentById(R.id.content_frame)!=null) {
-                    getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.content_frame)).commit();
-                    list = null;
+//                    getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.content_frame)).commit();
+//                    list = null;
                 }
                 return false;
             }
@@ -107,17 +110,7 @@ public class MainActivity extends ActionBarActivity {
                 imm.hideSoftInputFromWindow(searchView.getWindowToken(),0);
                 searchView.clearFocus();
                 if (getSupportFragmentManager().findFragmentById(R.id.content_frame)==null) {
-                    Bundle args = new Bundle();
-                    args.putString("query",s);
-                    list = new ArrayListFragment();
-                    list.setArguments(args);
-                    getSupportFragmentManager().beginTransaction().add(R.id.content_frame, list).commit();
-                }else{
-                    Bundle args = new Bundle();
-                    args.putString("query",s);
-                    list = new ArrayListFragment();
-                    list.setArguments(args);
-                    getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, list).commit();
+                    Log.d(TAG, "TRUE");
                 }
                 return true;
             }
